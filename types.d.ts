@@ -11,4 +11,5 @@ interface BookType {
     coverURL: string;
     video: string;
     summary: string;
+    isLoanedBook?: boolean;
 }
