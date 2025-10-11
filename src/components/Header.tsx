@@ -1,13 +1,15 @@
-'use client';
-
 import Link from 'next/link';
-import { Button } from './ui/button';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { Session } from 'next-auth'; // ← Import type
 
-function Header() {
-    const pathname = usePathname();
+import { Button } from './ui/button';
+import { signOut } from '@/auth';
+
+interface HeaderProps {
+    session: Session | null;
+}
+function Header({ session }: HeaderProps) {
+    console.log(session);
     return (
         <header className="my-10 flex justify-center gap-5">
             <Link href="/">
@@ -19,11 +21,25 @@ function Header() {
                 />
             </Link>
             <ul className="flex flex-row items-center gap-8">
-                <li>
-                    <form className="mb-10">
-                        <Button>Logout</Button>
-                    </form>
-                </li>
+                {session ? (
+                    <li>
+                        <form
+                            action={async () => {
+                                'use server';
+                                await signOut({ redirectTo: '/' });
+                            }}
+                            className="mb-10"
+                        >
+                            <Button>Logout</Button>
+                        </form>
+                    </li>
+                ) : (
+                    <li>
+                        <Link href="/sign-in">
+                            <Button>Login</Button>
+                        </Link>
+                    </li>
+                )}
             </ul>
         </header>
     );

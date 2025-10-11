@@ -10,6 +10,9 @@ import {
     UseFormReturn,
 } from 'react-hook-form';
 import { ZodType } from 'zod';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -21,10 +24,8 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import Link from 'next/link';
 import { FIELD_NAMES, FIELD_TYPES } from '@/constants';
-
-import { useRouter } from 'next/navigation';
+import ImageUpload from './ImageUpload';
 
 interface Props<T extends FieldValues> {
     schema: ZodType<T>;
@@ -39,6 +40,7 @@ const AuthForm = <T extends FieldValues>({
     defaultValues,
     onSubmit,
 }: Props<T>) => {
+    const { toast } = useToast();
     const router = useRouter();
 
     const isSignIn = type === 'SIGN_IN';
@@ -47,6 +49,27 @@ const AuthForm = <T extends FieldValues>({
         resolver: zodResolver(schema),
         defaultValues: defaultValues as DefaultValues<T>,
     });
+
+    const handleSubmit: SubmitHandler<T> = async (data) => {
+        const result = await onSubmit(data);
+
+        if (result.success) {
+            router.push('/');
+            toast({
+                title: isSignIn ? 'Signed in successfully' : 'Account created',
+                description: isSignIn
+                    ? 'You have successfully signed in.'
+                    : 'Your account has been created successfully.',
+            });
+        } else {
+            toast({
+                title: 'Error',
+                description:
+                    result.error || 'Something went wrong. Please try again.',
+                variant: 'destructive',
+            });
+        }
+    };
 
     return (
         <div className="flex flex-col gap-4">
@@ -62,7 +85,7 @@ const AuthForm = <T extends FieldValues>({
             </p>
             <Form {...form}>
                 <form
-                    onSubmit={form.handleSubmit(onSubmit)}
+                    onSubmit={form.handleSubmit(handleSubmit)}
                     className="w-full space-y-6"
                 >
                     {Object.keys(defaultValues).map((field) => (
@@ -80,27 +103,30 @@ const AuthForm = <T extends FieldValues>({
                                         }
                                     </FormLabel>
                                     <FormControl>
-                                        {/* {field.name === "universityCard" ? (
-                      <FileUpload
-                        type="image"
-                        accept="image/*"
-                        placeholder="Upload your ID"
-                        folder="ids"
-                        variant="dark"
-                        onFileChange={field.onChange}
-                      />
-                    ) : ( */}
-                                        <Input
-                                            required
-                                            type={
-                                                FIELD_TYPES[
-                                                    field.name as keyof typeof FIELD_TYPES
-                                                ]
-                                            }
-                                            {...field}
-                                            className="form-input"
-                                        />
-                                        {/* )} */}
+                                        {field.name === 'universityCard' ? (
+                                            <ImageUpload
+                                                placeholder="Upload your ID"
+                                                variant="dark"
+                                                type="image"
+                                                folder="university-cards"
+                                                accept="image/*"
+                                                value={field.value}
+                                                onUploadSuccess={(
+                                                    url: string,
+                                                ) => field.onChange(url)}
+                                            />
+                                        ) : (
+                                            <Input
+                                                required
+                                                type={
+                                                    FIELD_TYPES[
+                                                        field.name as keyof typeof FIELD_TYPES
+                                                    ]
+                                                }
+                                                {...field}
+                                                className="form-input"
+                                            />
+                                        )}
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
