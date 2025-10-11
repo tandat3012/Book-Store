@@ -13,8 +13,6 @@ function BookOverView({
     coverColor,
     coverURL,
 }: BookType) {
-    console.log('coverURL:', coverURL);
-    console.log('coverColor:', coverColor);
     return (
         <>
             <section className="book-overview">

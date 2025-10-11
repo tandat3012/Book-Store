@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1758807134669,
+      "tag": "0000_brainy_archangel",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1758807682280,
+      "tag": "0001_update_user_table",
+      "breakpoints": true
+    }
+  ]
+}

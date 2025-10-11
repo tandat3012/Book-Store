@@ -1,7 +1,11 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
+
+import { SessionProvider } from 'next-auth/react';
 import './globals.css';
+import { Toaster } from '@/components/ui/toaster';
+import { auth } from '@/auth';
 
 const ibmPlexSans = localFont({
     src: [
@@ -48,14 +52,19 @@ export const metadata: Metadata = {
     description: 'Universal Book Management System',
 };
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => {
+const RootLayout = async ({ children }: { children: React.ReactNode }) => {
+    const session = await auth();
     return (
         <html lang="en">
-            <body
-                className={`${ibmPlexSans.className} ${bebasNeue.variable} antialiased`}
-            >
-                {children}
-            </body>
+            <SessionProvider session={session}>
+                <body
+                    className={`${ibmPlexSans.className} ${bebasNeue.variable} antialiased`}
+                    suppressHydrationWarning={true}
+                >
+                    {children}
+                    <Toaster />
+                </body>
+            </SessionProvider>
         </html>
     );
 };
