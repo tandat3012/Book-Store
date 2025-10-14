@@ -22,9 +22,7 @@ const {
 
 const authenticator = async () => {
     try {
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/imageKit`,
-        );
+        const response = await fetch('/api/imageKit');
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`Error: ${response.status} - ${errorText}`);
