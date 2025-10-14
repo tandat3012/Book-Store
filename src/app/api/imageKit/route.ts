@@ -8,8 +8,6 @@ const {
     },
 } = config;
 
-console.log('ImageKit Config:', { publicKey, privateKey, urlEndpoint });
-
 export async function GET() {
     const { token, expire, signature } = getUploadAuthParams({
         privateKey,
@@ -20,6 +18,6 @@ export async function GET() {
         token,
         expire,
         signature,
-        publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+        publicKey: publicKey,
     });
 }
