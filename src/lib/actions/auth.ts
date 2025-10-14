@@ -9,6 +9,8 @@ import { signIn } from '@/auth';
 import { headers } from 'next/headers';
 import ratelimit from '../ratelimit';
 import { redirect } from 'next/navigation';
+import { workflowClient } from '../workflow';
+import config from '../config';
 
 export const signUp = async (formData: AuthCredentials) => {
     const { fullName, email, password, universityCard, universityId } =
@@ -41,7 +43,13 @@ export const signUp = async (formData: AuthCredentials) => {
             universityCard,
         });
 
-        // await sendVerificationEmail(email); // Implement this function as needed
+        await workflowClient.trigger({
+            url: `${config.env.apiEndpoint}/api/workflows/onboarding`,
+            body: {
+                email,
+                fullName,
+            },
+        });
         await signInWithCredentials({ email, password });
         return { success: true };
     } catch (err) {
